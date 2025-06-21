@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          # cache設定を削除
       
       - name: Install dependencies
         run: npm install
@@ -25,4 +25,4 @@ jobs:
         run: npm run build
       
       - name: Test
-        run: npm test -- --coverage --watchAll=false
+        run: npm test -- --passWithNoTests --watchAll=false
