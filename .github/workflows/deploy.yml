@@ -13,7 +13,7 @@ jobs:
   # AI Agent
   ai-agent:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '@ai-agent') || github.event_name == 'issues'
+    if: contains(github.event.comment.body, '@takemiko-ai') || github.event_name == 'issues'
     steps:
       - uses: actions/checkout@v4
       - name: PR Agent
