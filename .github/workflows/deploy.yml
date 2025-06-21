@@ -1,4 +1,4 @@
-name: AI-Powered CI/CD
+name: AI-Powered Complete CI/CD
 on:
   push:
     branches: [ main ]
@@ -10,7 +10,7 @@ on:
     types: [created]
 
 jobs:
-  # AI Code Generation
+  # AI Agent
   ai-agent:
     runs-on: ubuntu-latest
     if: contains(github.event.comment.body, '@ai-agent') || github.event_name == 'issues'
@@ -21,15 +21,13 @@ jobs:
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.HUGGINGFACE_TOKEN }}
 
-  # Build and Deploy
-  build-and-deploy:
+  # Build Test Deploy
+  deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -45,7 +43,6 @@ jobs:
       - name: Test
         run: npm test -- --passWithNoTests --watchAll=false
       
-      # Vercel Deploy
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
