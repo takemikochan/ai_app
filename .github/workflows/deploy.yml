@@ -1,13 +1,32 @@
-name: Build and Deploy
+name: AI-Powered CI/CD
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
 
 jobs:
+  # AI Code Generation
+  ai-agent:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '@ai-agent') || github.event_name == 'issues'
+    steps:
+      - uses: actions/checkout@v4
+      - name: PR Agent
+        uses: qodo-ai/pr-agent@main
+        env:
+          HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.HUGGINGFACE_TOKEN }}
+
+  # Build and Deploy
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,7 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          # cache設定を削除
       
       - name: Install dependencies
         run: npm install
@@ -26,3 +44,12 @@ jobs:
       
       - name: Test
         run: npm test -- --passWithNoTests --watchAll=false
+      
+      # Vercel Deploy
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          vercel-args: '--prod'
